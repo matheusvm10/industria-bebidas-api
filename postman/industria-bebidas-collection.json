@@ -1,0 +1,995 @@
+{
+  "info": {
+    "_postman_id": "393d2ba7-9b1f-4dca-a65c-eb5e133363ef",
+    "name": "Indústria de Bebidas - Controle de Almoxarifado (26 Endpoints)",
+    "description": "Coleção completa para abastecimento, operação e validação dos 26 endpoints da API REST de Almoxarifado de Bebidas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "60407137",
+    "_collection_link": "https://go.postman.co/collection/60407137-393d2ba7-9b1f-4dca-a65c-eb5e133363ef?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Usuários e Autenticação (Público + Protegido)",
+      "item": [
+        {
+          "name": "01. Cadastrar Usuário (Operador Almoxarifado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set('usuarioId', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"login\": \"carlos.almox\",\n  \"senha\": \"Senha@2026\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02. Login (Gera e Salva Token JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    console.log('Token JWT salvo automaticamente!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"carlos.almox\",\n  \"senha\": \"Senha@2026\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03. Meu Perfil (/usuarios/me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usuarios/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usuarios",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04. Listar Usuários",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usuarios?ativo=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "ativo",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05. Buscar Usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06. Atualizar Usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Carlos Eduardo Mendes\",\n  \"login\": \"carlos.almox\",\n  \"ativo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07. Inativar Usuário (Criar 2º usuário antes de testar)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usuarios/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "usuarios",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Setores da Fábrica",
+      "item": [
+        {
+          "name": "08. Criar Setor (Linha de Envase 01)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('setorId', pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Linha de Envase 01\",\n  \"descricao\": \"Engarrafamento de refrigerantes PET 2L\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/setores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "setores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08b. Criar Setor (Xaroparia e Formulação)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Xaroparia e Formula\\u00e7\\u00e3o\",\n  \"descricao\": \"Preparo de concentrados, a\\u00e7\\u00facar l\\u00edquido e aromas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/setores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "setores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "09. Listar Setores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/setores?ativo=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "setores"
+              ],
+              "query": [
+                {
+                  "key": "ativo",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10. Buscar Setor por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/setores/{{setorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "setores",
+                "{{setorId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "11. Atualizar Setor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Linha de Envase 01 - PET\",\n  \"descricao\": \"Engarrafamento de refrigerantes e sucos PET\",\n  \"ativo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/setores/{{setorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "setores",
+                "{{setorId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12. Excluir ou Inativar Setor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/setores/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "setores",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Fornecedores de Insumos",
+      "item": [
+        {
+          "name": "13. Criar Fornecedor (Embalagens PET)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('fornecedorId', pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"PlastiBev Embalagens Ltda\",\n  \"cnpj\": \"12345678000195\",\n  \"telefone\": \"71998887766\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fornecedores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fornecedores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "13b. Criar Fornecedor (Ingredientes e Concentrados)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"BioAromas & A\\u00e7\\u00facares S.A.\",\n  \"cnpj\": \"98765432000110\",\n  \"telefone\": \"7133445566\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fornecedores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fornecedores"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "14. Listar Fornecedores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/fornecedores?ativo=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fornecedores"
+              ],
+              "query": [
+                {
+                  "key": "ativo",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15. Buscar Fornecedor por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/fornecedores/{{fornecedorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fornecedores",
+                "{{fornecedorId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "16. Atualizar Fornecedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"PlastiBev Embalagens Industriais Ltda\",\n  \"cnpj\": \"12345678000195\",\n  \"telefone\": \"71998880000\",\n  \"ativo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fornecedores/{{fornecedorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fornecedores",
+                "{{fornecedorId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "17. Excluir ou Inativar Fornecedor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/fornecedores/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fornecedores",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Insumos (Matéria-Prima e Embalagens)",
+      "item": [
+        {
+          "name": "18. Criar Insumo (Garrafa PET 2L - UN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('insumoId', pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Garrafa PET 2L Cristal\",\n  \"unidadeMedida\": \"UN\",\n  \"estoqueMinimo\": 500,\n  \"fornecedorId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/insumos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18b. Criar Insumo (Açúcar Cristal - KG)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"A\\u00e7\\u00facar Cristal Refinado\",\n  \"unidadeMedida\": \"KG\",\n  \"estoqueMinimo\": 250.5,\n  \"fornecedorId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/insumos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18c. Criar Insumo (Concentrado Guaraná - L)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Concentrado Natural de Guaran\\u00e1\",\n  \"unidadeMedida\": \"L\",\n  \"estoqueMinimo\": 100.0,\n  \"fornecedorId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/insumos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "19. Listar Insumos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/insumos?ativo=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos"
+              ],
+              "query": [
+                {
+                  "key": "ativo",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "20. Buscar Insumo por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/insumos/{{insumoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos",
+                "{{insumoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "21. Atualizar Insumo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Garrafa PET 2L Cristal Refor\\u00e7ada\",\n  \"unidadeMedida\": \"UN\",\n  \"estoqueMinimo\": 600,\n  \"fornecedorId\": 1,\n  \"ativo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/insumos/{{insumoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos",
+                "{{insumoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "22. Excluir ou Inativar Insumo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/insumos/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Movimentações e Alertas de Estoque",
+      "item": [
+        {
+          "name": "23. Registrar ENTRADA (Abastecer Garrafa PET)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('movimentacaoId', pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insumoId\": 1,\n  \"tipo\": \"ENTRADA\",\n  \"quantidade\": 1200,\n  \"dataMovimentacao\": \"2026-11-24\",\n  \"lote\": \"LOTE-PET-2026A\",\n  \"validade\": \"2027-11-24\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "23b. Registrar ENTRADA (Abastecer Açúcar Cristal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insumoId\": 2,\n  \"tipo\": \"ENTRADA\",\n  \"quantidade\": 500.75,\n  \"dataMovimentacao\": \"2026-11-24\",\n  \"lote\": \"LOTE-ACU-889\",\n  \"validade\": \"2027-06-30\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "23c. Registrar SAÍDA (Consumo na Linha de Envase)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insumoId\": 1,\n  \"tipo\": \"SAIDA\",\n  \"quantidade\": 750,\n  \"setorId\": 1,\n  \"dataMovimentacao\": \"2026-11-24\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "24. Listar Movimentações (Histórico)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "25. Buscar Movimentação por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movimentacoes/{{movimentacaoId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes",
+                "{{movimentacaoId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "26. Consultar Alertas de Estoque Crítico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/alertas/estoque",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "alertas",
+                "estoque"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Testes de Regras de Negócio e Erros (400 / 401 / 409)",
+      "item": [
+        {
+          "name": "Erro 401 - Acesso sem Token JWT",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/insumos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "insumos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Erro 409 - Saída Maior que Saldo Disponível",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insumoId\": 1,\n  \"tipo\": \"SAIDA\",\n  \"quantidade\": 99999,\n  \"setorId\": 1,\n  \"dataMovimentacao\": \"2026-11-24\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Erro 400 - Unidade UN com Casa Decimal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insumoId\": 1,\n  \"tipo\": \"ENTRADA\",\n  \"quantidade\": 10.5,\n  \"dataMovimentacao\": \"2026-11-24\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Erro 400 - Saída sem Setor Informado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"insumoId\": 1,\n  \"tipo\": \"SAIDA\",\n  \"quantidade\": 10,\n  \"dataMovimentacao\": \"2026-11-24\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movimentacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "movimentacoes"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "usuarioId",
+      "value": "1"
+    },
+    {
+      "key": "setorId",
+      "value": "1"
+    },
+    {
+      "key": "fornecedorId",
+      "value": "1"
+    },
+    {
+      "key": "insumoId",
+      "value": "1"
+    },
+    {
+      "key": "movimentacaoId",
+      "value": "1"
+    }
+  ]
+}

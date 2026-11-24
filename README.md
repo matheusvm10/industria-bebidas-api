@@ -13,6 +13,7 @@ API RESTful desenvolvida em **Java 17** com **Spring Boot 3.3.5** e **MySQL 8.0*
 * **Carlos**
 * **Moisés**
 * **Pablo**
+* **Gustavo**
 
 ---
 
